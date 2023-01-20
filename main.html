@@ -8,36 +8,55 @@
 </head>
 <body>
 
-    <div class="voiceinator">
-
-      <h1>The Voiceinator 5000</h1>
-
-      <select name="voice" id="voices">
-        <option value="">Select A Voice</option>
-      </select>
-
-      <label for="rate">Rate:</label>
-      <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
-
-      <label for="pitch">Pitch:</label>
-
-      <input name="pitch" type="range" min="0" max="2" step="0.1">
-      <textarea name="text">Hello! I love JavaScript 👍</textarea>
-      <button id="stop">Stop!</button>
-      <button id="speak">Speak</button>
-
+    <div>
+      <textarea id="inputText"></textarea>
+      <br>
+      <select id="voiceSelect"></select>
+      <br>
+      <button id="startButton">Start</button>
+      <button id="stopButton">Stop</button>
     </div>
 
 <script>
-  const msg = new SpeechSynthesisUtterance();
-  let voices = [];
-  const voicesDropdown = document.querySelector('[name="voice"]');
-  const options = document.querySelectorAll('[type="range"], [name="text"]');
-  const speakButton = document.querySelector('#speak');
-  const stopButton = document.querySelector('#stop');
+  // get references to elements on the page
+  var inputText = document.getElementById("inputText");
+  var voiceSelect = document.getElementById("voiceSelect");
+  var startButton = document.getElementById("startButton");
+  var stopButton = document.getElementById("stopButton");
 
-  //Your code goes here
+  // get the list of available voices
+  var voices = speechSynthesis.getVoices();
+
+  // loop through the voices and add them to the voice select
+  for (var i = 0; i < voices.length; i++) {
+    var option = document.createElement("option");
+    option.value = voices[i].name;
+    option.text = voices[i].name;
+    voiceSelect.appendChild(option);
+  }
+
+  // setup event listeners for the start and stop buttons
+  startButton.addEventListener("click", startSpeech);
+  stopButton.addEventListener("click", stopSpeech);
+
+  function startSpeech() {
+    // create a new speech synthesis utterance
+    var utterance = new SpeechSynthesisUtterance(inputText.value);
+
+    // set the voice
+    utterance.voice = voices.find(function(voice) {
+      return voice.name === voiceSelect.value;
+    });
+
+    // start speaking
+    speechSynthesis.speak(utterance);
+  }
+
+  function stopSpeech() {
+    speechSynthesis.cancel();
+  }
 </script>
+
 
 </body>
 </html>
